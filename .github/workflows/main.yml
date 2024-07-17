@@ -13,12 +13,16 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v1
+      with:
+        credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
+
     - name: Set up Cloud SDK
       uses: google-github-actions/setup-gcloud@v1
       with:
-        version: 'latest'
-        service_account_key: ${{ secrets.GOOGLE_CREDENTIALS }}
         project_id: ${{ secrets.PROJECT_ID }}
+        install_components: 'kubectl'
 
     - name: Configure Docker
       run: gcloud auth configure-docker us-docker.pkg.dev
@@ -45,4 +49,3 @@ jobs:
         kubectl set image deployment/product-service product-service=us-docker.pkg.dev/$PROJECT_ID/company-y/aitdevops8/product-service:latest
         kubectl set image deployment/order-service order-service=us-docker.pkg.dev/$PROJECT_ID/company-y/aitdevops8/order-service:latest
         kubectl set image deployment/user-service user-service=us-docker.pkg.dev/$PROJECT_ID/company-y/aitdevops8/user-service:latest
-
