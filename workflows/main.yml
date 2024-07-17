@@ -3,7 +3,7 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main
+      - master  # Ensure this matches your branch name
 
 jobs:
   build:
@@ -45,4 +45,3 @@ jobs:
         kubectl set image deployment/product-service product-service=gcr.io/$PROJECT_ID/product-service:latest
         kubectl set image deployment/order-service order-service=gcr.io/$PROJECT_ID/order-service:latest
         kubectl set image deployment/user-service user-service=gcr.io/$PROJECT_ID/user-service:latest
-
