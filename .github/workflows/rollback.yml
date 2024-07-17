@@ -1,0 +1,45 @@
+name: Rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      release-name:
+        description: 'The name of the Helm release'
+        required: true
+        default: 'frontend'
+      revision:
+        description: 'The revision number to rollback to'
+        required: true
+        default: 1
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v1
+      with:
+        credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+    - name: Set up Google Cloud SDK
+      uses: google-github-actions/setup-gcloud@v1
+      with:
+        project_id: ${{ secrets.PROJECT_ID }}
+        install_components: kubectl
+
+    - name: Set up Helm
+      run: |
+        curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+    - name: Configure kubectl
+      run: |
+        gcloud container clusters get-credentials ${{ secrets.CLUSTER_NAME }} --zone ${{ secrets.CLUSTER_ZONE }} --project ${{ secrets.PROJECT_ID }}
+
+    - name: Rollback Helm Release
+      run: |
+        helm rollback ${{ github.event.inputs.release-name }} ${{ github.event.inputs.revision }}
+
