@@ -3,15 +3,10 @@ name: Rollback
 on:
   workflow_dispatch:
     inputs:
-      service-name:
-        description: 'The name of the Helm release (service) to rollback'
+      release-name:
+        description: 'The name of the Helm release'
         required: true
-        type: choice
-        options:
-          - frontend
-          - product-service
-          - order-service
-          - user-service
+        default: 'frontend'
       revision:
         description: 'The revision number to rollback to'
         required: true
@@ -46,4 +41,4 @@ jobs:
 
     - name: Rollback Helm Release
       run: |
-        helm rollback ${{ github.event.inputs.service-name }} ${{ github.event.inputs.revision }}
+        helm rollback ${{ github.event.inputs.release-name }} ${{ github.event.inputs.revision }}
