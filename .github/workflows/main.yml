@@ -9,6 +9,7 @@ on:
       - 'services/order-service/**'
       - 'services/user-service/**'
       - 'frontend/**'
+      - 'charts/**'
 
 jobs:
   build:
@@ -20,7 +21,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up Google Cloud auth
+    - name: Authenticate to Google Cloud
       uses: google-github-actions/auth@v1
       with:
         credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
@@ -31,71 +32,93 @@ jobs:
         project_id: ${{ secrets.PROJECT_ID }}
         install_components: kubectl
 
+    - name: Set up Helm
+      run: |
+        curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+    - name: Configure kubectl
+      run: |
+        gcloud container clusters get-credentials ${{ secrets.CLUSTER_NAME }} --zone ${{ secrets.CLUSTER_ZONE }} --project ${{ secrets.PROJECT_ID }}
+
     - name: Configure Docker for GCP
       run: gcloud auth configure-docker us-docker.pkg.dev
 
-    - name: Filter paths
-      id: filter_paths
-      uses: dorny/paths-filter@v2
-      with:
-        filters: |
-          frontend:
-            - 'frontend/**'
-          product-service:
-            - 'services/product-service/**'
-          order-service:
-            - 'services/order-service/**'
-          user-service:
-            - 'services/user-service/**'
-
     - name: Build and push frontend image
-      if: steps.filter_paths.outputs.frontend == 'true'
+      if: contains(github.event.head_commit.message, 'frontend')
       run: |
         docker build -t us-docker.pkg.dev/${{ secrets.PROJECT_ID }}/company-y/aitdevops8/frontend:${{ env.IMAGE_TAG }} -f frontend/Dockerfile ./frontend
         docker push us-docker.pkg.dev/${{ secrets.PROJECT_ID }}/company-y/aitdevops8/frontend:${{ env.IMAGE_TAG }}
 
-    - name: Deploy frontend to GKE
-      if: steps.filter_paths.outputs.frontend == 'true'
+    - name: Update Helm values file for frontend
+      if: contains(github.event.head_commit.message, 'frontend')
       run: |
-        gcloud container clusters get-credentials ${{ secrets.CLUSTER_NAME }} --zone ${{ secrets.CLUSTER_ZONE }} --project ${{ secrets.PROJECT_ID }}
-        kubectl set image deployment/frontend frontend=us-docker.pkg.dev/${{ secrets.PROJECT_ID }}/company-y/aitdevops8/frontend:${{ env.IMAGE_TAG }}
-        kubectl rollout status deployment/frontend
+        sed -i 's/tag: ".*"/tag: "${{ env.IMAGE_TAG }}"/' charts/frontend/values.yaml
+
+    - name: Deploy frontend with Helm
+      if: contains(github.event.head_commit.message, 'frontend')
+      run: |
+        helm upgrade --install frontend charts/frontend --set image.tag=${{ env.IMAGE_TAG }}
 
     - name: Build and push product-service image
-      if: steps.filter_paths.outputs.product-service == 'true'
+      if: contains(github.event.head_commit.message, 'product-service')
       run: |
         docker build -t us-docker.pkg.dev/${{ secrets.PROJECT_ID }}/company-y/aitdevops8/product-service:${{ env.IMAGE_TAG }} -f services/product-service/Dockerfile ./services/product-service
         docker push us-docker.pkg.dev/${{ secrets.PROJECT_ID }}/company-y/aitdevops8/product-service:${{ env.IMAGE_TAG }}
 
-    - name: Deploy product-service to GKE
-      if: steps.filter_paths.outputs.product-service == 'true'
+    - name: Update Helm values file for product-service
+      if: contains(github.event.head_commit.message, 'product-service')
       run: |
-        gcloud container clusters get-credentials ${{ secrets.CLUSTER_NAME }} --zone ${{ secrets.CLUSTER_ZONE }} --project ${{ secrets.PROJECT_ID }}
-        kubectl set image deployment/product-service product-service=us-docker.pkg.dev/${{ secrets.PROJECT_ID }}/company-y/aitdevops8/product-service:${{ env.IMAGE_TAG }}
-        kubectl rollout status deployment/product-service
+        sed -i 's/tag: ".*"/tag: "${{ env.IMAGE_TAG }}"/' charts/product-service/values.yaml
+
+    - name: Deploy product-service with Helm
+      if: contains(github.event.head_commit.message, 'product-service')
+      run: |
+        helm upgrade --install product-service charts/product-service --set image.tag=${{ env.IMAGE_TAG }}
 
     - name: Build and push order-service image
-      if: steps.filter_paths.outputs.order-service == 'true'
+      if: contains(github.event.head_commit.message, 'order-service')
       run: |
         docker build -t us-docker.pkg.dev/${{ secrets.PROJECT_ID }}/company-y/aitdevops8/order-service:${{ env.IMAGE_TAG }} -f services/order-service/Dockerfile ./services/order-service
         docker push us-docker.pkg.dev/${{ secrets.PROJECT_ID }}/company-y/aitdevops8/order-service:${{ env.IMAGE_TAG }}
 
-    - name: Deploy order-service to GKE
-      if: steps.filter_paths.outputs.order-service == 'true'
+    - name: Update Helm values file for order-service
+      if: contains(github.event.head_commit.message, 'order-service')
       run: |
-        gcloud container clusters get-credentials ${{ secrets.CLUSTER_NAME }} --zone ${{ secrets.CLUSTER_ZONE }} --project ${{ secrets.PROJECT_ID }}
-        kubectl set image deployment/order-service order-service=us-docker.pkg.dev/${{ secrets.PROJECT_ID }}/company-y/aitdevops8/order-service:${{ env.IMAGE_TAG }}
-        kubectl rollout status deployment/order-service
+        sed -i 's/tag: ".*"/tag: "${{ env.IMAGE_TAG }}"/' charts/order-service/values.yaml
+
+    - name: Deploy order-service with Helm
+      if: contains(github.event.head_commit.message, 'order-service')
+      run: |
+        helm upgrade --install order-service charts/order-service --set image.tag=${{ env.IMAGE_TAG }}
 
     - name: Build and push user-service image
-      if: steps.filter_paths.outputs.user-service == 'true'
+      if: contains(github.event.head_commit.message, 'user-service')
       run: |
         docker build -t us-docker.pkg.dev/${{ secrets.PROJECT_ID }}/company-y/aitdevops8/user-service:${{ env.IMAGE_TAG }} -f services/user-service/Dockerfile ./services/user-service
         docker push us-docker.pkg.dev/${{ secrets.PROJECT_ID }}/company-y/aitdevops8/user-service:${{ env.IMAGE_TAG }}
 
-    - name: Deploy user-service to GKE
-      if: steps.filter_paths.outputs.user-service == 'true'
+    - name: Update Helm values file for user-service
+      if: contains(github.event.head_commit.message, 'user-service')
       run: |
-        gcloud container clusters get-credentials ${{ secrets.CLUSTER_NAME }} --zone ${{ secrets.CLUSTER_ZONE }} --project ${{ secrets.PROJECT_ID }}
-        kubectl set image deployment/user-service user-service=us-docker.pkg.dev/${{ secrets.PROJECT_ID }}/company-y/aitdevops8/user-service:${{ env.IMAGE_TAG }}
-        kubectl rollout status deployment/user-service
+        sed -i 's/tag: ".*"/tag: "${{ env.IMAGE_TAG }}"/' charts/user-service/values.yaml
+
+    - name: Deploy user-service with Helm
+      if: contains(github.event.head_commit.message, 'user-service')
+      run: |
+        helm upgrade --install user-service charts/user-service --set image.tag=${{ env.IMAGE_TAG }}
+
+    - name: Print Helm Release History for frontend
+      run: |
+        helm history frontend
+
+    - name: Print Helm Release History for product-service
+      run: |
+        helm history product-service
+
+    - name: Print Helm Release History for order-service
+      run: |
+        helm history order-service
+
+    - name: Print Helm Release History for user-service
+      run: |
+        helm history user-service
