@@ -25,10 +25,10 @@ jobs:
 
     - name: Build and push Docker images
       run: |
-        docker build -t gcr.io/${{ secrets.PROJECT_ID }}/frontend:latest -f frontend/Dockerfile .
-        docker build -t gcr.io/${{ secrets.PROJECT_ID }}/product-service:latest -f product-service/Dockerfile .
-        docker build -t gcr.io/${{ secrets.PROJECT_ID }}/order-service:latest -f order-service/Dockerfile .
-        docker build -t gcr.io/${{ secrets.PROJECT_ID }}/user-service:latest -f user-service/Dockerfile .
+        docker build -t gcr.io/${{ secrets.PROJECT_ID }}/frontend:latest -f frontend/Dockerfile ./frontend
+        docker build -t gcr.io/${{ secrets.PROJECT_ID }}/product-service:latest -f services/product-service/Dockerfile ./services/product-service
+        docker build -t gcr.io/${{ secrets.PROJECT_ID }}/order-service:latest -f services/order-service/Dockerfile ./services/order-service
+        docker build -t gcr.io/${{ secrets.PROJECT_ID }}/user-service:latest -f services/user-service/Dockerfile ./services/user-service
         docker push gcr.io/${{ secrets.PROJECT_ID }}/frontend:latest
         docker push gcr.io/${{ secrets.PROJECT_ID }}/product-service:latest
         docker push gcr.io/${{ secrets.PROJECT_ID }}/order-service:latest
