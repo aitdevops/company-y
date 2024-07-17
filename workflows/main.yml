@@ -1,0 +1,48 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@master
+      with:
+        version: 'latest'
+        service_account_key: ${{ secrets.GOOGLE_CREDENTIALS }}
+        project_id: ${{ secrets.PROJECT_ID }}
+
+    - name: Configure Docker
+      run: gcloud auth configure-docker
+
+    - name: Build and push Docker images
+      run: |
+        docker build -t gcr.io/${{ secrets.PROJECT_ID }}/frontend:latest -f frontend/Dockerfile .
+        docker build -t gcr.io/${{ secrets.PROJECT_ID }}/product-service:latest -f product-service/Dockerfile .
+        docker build -t gcr.io/${{ secrets.PROJECT_ID }}/order-service:latest -f order-service/Dockerfile .
+        docker build -t gcr.io/${{ secrets.PROJECT_ID }}/user-service:latest -f user-service/Dockerfile .
+        docker push gcr.io/${{ secrets.PROJECT_ID }}/frontend:latest
+        docker push gcr.io/${{ secrets.PROJECT_ID }}/product-service:latest
+        docker push gcr.io/${{ secrets.PROJECT_ID }}/order-service:latest
+        docker push gcr.io/${{ secrets.PROJECT_ID }}/user-service:latest
+
+    - name: Deploy to GKE
+      env:
+        PROJECT_ID: ${{ secrets.PROJECT_ID }}
+        CLUSTER_NAME: ${{ secrets.CLUSTER_NAME }}
+        CLUSTER_ZONE: ${{ secrets.CLUSTER_ZONE }}
+      run: |
+        gcloud container clusters get-credentials $CLUSTER_NAME --zone $CLUSTER_ZONE --project $PROJECT_ID
+        kubectl set image deployment/frontend frontend=gcr.io/$PROJECT_ID/frontend:latest
+        kubectl set image deployment/product-service product-service=gcr.io/$PROJECT_ID/product-service:latest
+        kubectl set image deployment/order-service order-service=gcr.io/$PROJECT_ID/order-service:latest
+        kubectl set image deployment/user-service user-service=gcr.io/$PROJECT_ID/user-service:latest
+
