@@ -45,7 +45,11 @@ jobs:
         CLUSTER_ZONE: ${{ secrets.CLUSTER_ZONE }}
       run: |
         gcloud container clusters get-credentials $CLUSTER_NAME --zone $CLUSTER_ZONE --project $PROJECT_ID
-        kubectl set image deployment/frontend frontend=us-docker.pkg.dev/$PROJECT_ID/company-y/aitdevops8/frontend:latest
         kubectl set image deployment/product-service product-service=us-docker.pkg.dev/$PROJECT_ID/company-y/aitdevops8/product-service:latest
+        kubectl rollout status deployment/product-service
         kubectl set image deployment/order-service order-service=us-docker.pkg.dev/$PROJECT_ID/company-y/aitdevops8/order-service:latest
+        kubectl rollout status deployment/order-service
         kubectl set image deployment/user-service user-service=us-docker.pkg.dev/$PROJECT_ID/company-y/aitdevops8/user-service:latest
+        kubectl rollout status deployment/user-service
+        kubectl set image deployment/frontend frontend=us-docker.pkg.dev/$PROJECT_ID/company-y/aitdevops8/frontend:latest
+        kubectl rollout status deployment/frontend
