@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+kname: CI/CD Pipeline
 
 on:
   push:
@@ -21,18 +21,18 @@ jobs:
         project_id: ${{ secrets.PROJECT_ID }}
 
     - name: Configure Docker
-      run: gcloud auth configure-docker
+      run: gcloud auth configure-docker us-docker.pkg.dev
 
     - name: Build and push Docker images
       run: |
-        docker build -t gcr.io/${{ secrets.PROJECT_ID }}/frontend:latest -f frontend/Dockerfile ./frontend
-        docker build -t gcr.io/${{ secrets.PROJECT_ID }}/product-service:latest -f services/product-service/Dockerfile ./services/product-service
-        docker build -t gcr.io/${{ secrets.PROJECT_ID }}/order-service:latest -f services/order-service/Dockerfile ./services/order-service
-        docker build -t gcr.io/${{ secrets.PROJECT_ID }}/user-service:latest -f services/user-service/Dockerfile ./services/user-service
-        docker push gcr.io/${{ secrets.PROJECT_ID }}/frontend:latest
-        docker push gcr.io/${{ secrets.PROJECT_ID }}/product-service:latest
-        docker push gcr.io/${{ secrets.PROJECT_ID }}/order-service:latest
-        docker push gcr.io/${{ secrets.PROJECT_ID }}/user-service:latest
+        docker build -t us-docker.pkg.dev/${{ secrets.PROJECT_ID }}/company-y/aitdevops8/frontend:latest -f frontend/Dockerfile ./frontend
+        docker build -t us-docker.pkg.dev/${{ secrets.PROJECT_ID }}/company-y/aitdevops8/product-service:latest -f services/product-service/Dockerfile ./services/product-service
+        docker build -t us-docker.pkg.dev/${{ secrets.PROJECT_ID }}/company-y/aitdevops8/order-service:latest -f services/order-service/Dockerfile ./services/order-service
+        docker build -t us-docker.pkg.dev/${{ secrets.PROJECT_ID }}/company-y/aitdevops8/user-service:latest -f services/user-service/Dockerfile ./services/user-service
+        docker push us-docker.pkg.dev/${{ secrets.PROJECT_ID }}/company-y/aitdevops8/frontend:latest
+        docker push us-docker.pkg.dev/${{ secrets.PROJECT_ID }}/company-y/aitdevops8/product-service:latest
+        docker push us-docker.pkg.dev/${{ secrets.PROJECT_ID }}/company-y/aitdevops8/order-service:latest
+        docker push us-docker.pkg.dev/${{ secrets.PROJECT_ID }}/company-y/aitdevops8/user-service:latest
 
     - name: Deploy to GKE
       env:
@@ -41,8 +41,8 @@ jobs:
         CLUSTER_ZONE: ${{ secrets.CLUSTER_ZONE }}
       run: |
         gcloud container clusters get-credentials $CLUSTER_NAME --zone $CLUSTER_ZONE --project $PROJECT_ID
-        kubectl set image deployment/frontend frontend=gcr.io/$PROJECT_ID/frontend:latest
-        kubectl set image deployment/product-service product-service=gcr.io/$PROJECT_ID/product-service:latest
-        kubectl set image deployment/order-service order-service=gcr.io/$PROJECT_ID/order-service:latest
-        kubectl set image deployment/user-service user-service=gcr.io/$PROJECT_ID/user-service:latest
+        kubectl set image deployment/frontend frontend=us-docker.pkg.dev/$PROJECT_ID/company-y/aitdevops8/frontend:latest
+        kubectl set image deployment/product-service product-service=us-docker.pkg.dev/$PROJECT_ID/company-y/aitdevops8/product-service:latest
+        kubectl set image deployment/order-service order-service=us-docker.pkg.dev/$PROJECT_ID/company-y/aitdevops8/order-service:latest
+        kubectl set image deployment/user-service user-service=us-docker.pkg.dev/$PROJECT_ID/company-y/aitdevops8/user-service:latest
 
