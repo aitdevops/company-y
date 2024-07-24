@@ -18,37 +18,56 @@ steps:
     args: ['push', 'us-central1-docker.pkg.dev/$PROJECT_ID/e-commerce/user-service']
 
   - name: 'gcr.io/cloud-builders/gcloud'
-    args: [
-      'run', 'deploy', 'frontend',
-      '--image', 'us-central1-docker.pkg.dev/$PROJECT_ID/e-commerce/frontend',
-      '--platform', 'managed',
-      '--region', '$_REGION',
-      '--allow-unauthenticated'
-    ]
+    entrypoint: '/bin/sh'
+    args:
+      - '-c'
+      - |
+        echo "Deploying frontend service"
+        gcloud run deploy frontend \
+          --image us-central1-docker.pkg.dev/$PROJECT_ID/e-commerce/frontend \
+          --platform managed \
+          --region $_REGION \
+          --allow-unauthenticated \
+        || { echo "Frontend deployment failed"; exit 1; }
+  
   - name: 'gcr.io/cloud-builders/gcloud'
-    args: [
-      'run', 'deploy', 'order-service',
-      '--image', 'us-central1-docker.pkg.dev/$PROJECT_ID/e-commerce/order-service',
-      '--platform', 'managed',
-      '--region', '$_REGION',
-      '--allow-unauthenticated'
-    ]
+    entrypoint: '/bin/sh'
+    args:
+      - '-c'
+      - |
+        echo "Deploying order-service"
+        gcloud run deploy order-service \
+          --image us-central1-docker.pkg.dev/$PROJECT_ID/e-commerce/order-service \
+          --platform managed \
+          --region $_REGION \
+          --allow-unauthenticated \
+        || { echo "Order-service deployment failed"; exit 1; }
+  
   - name: 'gcr.io/cloud-builders/gcloud'
-    args: [
-      'run', 'deploy', 'product-service',
-      '--image', 'us-central1-docker.pkg.dev/$PROJECT_ID/e-commerce/product-service',
-      '--platform', 'managed',
-      '--region', '$_REGION',
-      '--allow-unauthenticated'
-    ]
+    entrypoint: '/bin/sh'
+    args:
+      - '-c'
+      - |
+        echo "Deploying product-service"
+        gcloud run deploy product-service \
+          --image us-central1-docker.pkg.dev/$PROJECT_ID/e-commerce/product-service \
+          --platform managed \
+          --region $_REGION \
+          --allow-unauthenticated \
+        || { echo "Product-service deployment failed"; exit 1; }
+  
   - name: 'gcr.io/cloud-builders/gcloud'
-    args: [
-      'run', 'deploy', 'user-service',
-      '--image', 'us-central1-docker.pkg.dev/$PROJECT_ID/e-commerce/user-service',
-      '--platform', 'managed',
-      '--region', '$_REGION',
-      '--allow-unauthenticated'
-    ]
+    entrypoint: '/bin/sh'
+    args:
+      - '-c'
+      - |
+        echo "Deploying user-service"
+        gcloud run deploy user-service \
+          --image us-central1-docker.pkg.dev/$PROJECT_ID/e-commerce/user-service \
+          --platform managed \
+          --region $_REGION \
+          --allow-unauthenticated \
+        || { echo "User-service deployment failed"; exit 1; }
 
 images:
   - 'us-central1-docker.pkg.dev/$PROJECT_ID/e-commerce/frontend'
