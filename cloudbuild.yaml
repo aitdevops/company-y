@@ -14,7 +14,7 @@ images:
   - 'gcr.io/$PROJECT_ID/user-service'
 
 substitutions:
-  _REGION: <YOUR_REGION>
+  _REGION: $_REGION
 
 - name: 'gcr.io/cloud-builders/gcloud'
   args: ['run', 'deploy', 'frontend', '--image', 'gcr.io/$PROJECT_ID/frontend', '--platform', 'managed', '--region', '$_REGION', '--allow-unauthenticated']
