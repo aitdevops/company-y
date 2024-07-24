@@ -1,6 +1,5 @@
 options:
   logging: CLOUD_LOGGING_ONLY
-  logsBucket: gs://e-commerce-aitdevops
 
 steps:
   - name: 'gcr.io/cloud-builders/docker'
