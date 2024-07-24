@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const productServiceIp = '34.134.101.109';
-    const orderServiceIp = '35.239.106.224';
-    const userServiceIp = '34.46.253.49';
+    const productServiceIp = '';
+    const orderServiceIp = '';
+    const userServiceIp = '';
 
     document.getElementById('fetch-products').addEventListener('click', function() {
         fetch(`http://${productServiceIp}:5001/products`)
