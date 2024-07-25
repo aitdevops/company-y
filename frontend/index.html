@@ -1,26 +1,50 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-commerce Frontend</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <h1>Embrace the Future: Where DevOps Meets AI</h1>
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    background: url('background.jpg') no-repeat center center fixed;
+    background-size: cover;
+    color: #fff;
+}
 
-    <h2>Products</h2>
-    <button id="fetch-products">Fetch Products</button>
-    <div id="products"></div>
+h1 {
+    font-size: 3em;
+    margin-top: 50px;
+    text-shadow: 2px 2px 4px #000;
+}
 
-    <h2>Orders</h2>
-    <button id="fetch-orders">Fetch Orders</button>
-    <div id="orders"></div>
+h2 {
+    font-size: 2em;
+    margin-top: 30px;
+    text-shadow: 2px 2px 4px #000;
+}
 
-    <h2>Users</h2>
-    <button id="fetch-users">Fetch Users</button>
-    <div id="users"></div>
+button {
+    font-size: 1em;
+    padding: 10px 20px;
+    margin: 10px;
+    border: none;
+    background-color: #007BFF;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
 
-    <script src="script.js"></script>
-</body>
-</html>
+button:hover {
+    background-color: #0056b3;
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+#products, #orders, #users {
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 20px;
+    margin: 20px;
+    border-radius: 10px;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    display: inline-block;
+    text-align: left;
+    width: auto;
+}
