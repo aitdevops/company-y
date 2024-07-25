@@ -1,10 +1,10 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const productServiceIp = '';
-    const orderServiceIp = '';
-    const userServiceIp = '';
+    const productServiceUrl = 'https://product.aitdevops.com';
+    const orderServiceUrl = 'https://order.aitdevops.com';
+    const userServiceUrl = 'https://user.aitdevops.com';
 
     document.getElementById('fetch-products').addEventListener('click', function() {
-        fetch(`http://${productServiceIp}:5001/products`)
+        fetch(`${productServiceUrl}/products`)
             .then(response => response.json())
             .then(data => {
                 const productsDiv = document.getElementById('products');
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     document.getElementById('fetch-orders').addEventListener('click', function() {
-        fetch(`http://${orderServiceIp}:5002/orders`)
+        fetch(`${orderServiceUrl}/orders`)
             .then(response => response.json())
             .then(data => {
                 const ordersDiv = document.getElementById('orders');
@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     document.getElementById('fetch-users').addEventListener('click', function() {
-        fetch(`http://${userServiceIp}:5003/users`)
+        fetch(`${userServiceUrl}/users`)
             .then(response => response.json())
             .then(data => {
                 const usersDiv = document.getElementById('users');
