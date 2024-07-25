@@ -3,7 +3,7 @@ body {
     text-align: center;
     margin: 0;
     padding: 0;
-    background: url('designs/background.jpg') no-repeat center center fixed;
+    background-image: url('background.jpg') no-repeat center center fixed;
     background-size: cover;
 }
 
